@@ -9,15 +9,18 @@ import training.busboard.stoppoints.StopPointApiClient;
 
 import java.util.List;
 
+
 public class Main {
     public static void main(String args[]) {
+        UserInput userInput = new UserInput();
         StopPointApiClient stopPointApiClient = new StopPointApiClient();
-        PostcodeApiClient postcodeApiClient = new PostcodeApiClient();
 
-        PostcodeData postcodeData = postcodeApiClient.getPostcodeDate("NW51TL");
+        System.out.println("Welcome to BusBoard!\n");
+
+        PostcodeData postcode = userInput.getPostcode();
         NearbyStops nearestStops = stopPointApiClient.getNearestStops(
-                postcodeData.getLatitude(),
-                postcodeData.getLongitude()
+                postcode.getLatitude(),
+                postcode.getLongitude()
         );
 
         for (StopPoint stopPoint : nearestStops.getNearest(2)) {

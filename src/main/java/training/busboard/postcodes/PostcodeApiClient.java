@@ -25,6 +25,6 @@ public class PostcodeApiClient {
             return result.getResult();
         }
 
-        throw new RuntimeException(result.getError());
+        return null;
     }
 }
