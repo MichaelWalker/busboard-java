@@ -1,17 +1,28 @@
 package training.busboard;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
+import training.busboard.postcodes.PostcodeApiClient;
+import training.busboard.postcodes.models.PostcodeData;
+import training.busboard.stoppoints.models.ArrivalPrediction;
+import training.busboard.stoppoints.models.NearbyStops;
+import training.busboard.stoppoints.models.StopPoint;
+import training.busboard.stoppoints.StopPointApiClient;
+
+import java.util.List;
 
 public class Main {
     public static void main(String args[]) {
-        Client client = ClientBuilder.newClient();
-        ArrivalPrediction[] arrivalPredictions = client
-                .target("https://api.tfl.gov.uk/StopPoint/490008660N/Arrivals")
-                .request(MediaType.APPLICATION_JSON)
-                .get(ArrivalPrediction[].class);
+        StopPointApiClient stopPointApiClient = new StopPointApiClient();
+        PostcodeApiClient postcodeApiClient = new PostcodeApiClient();
 
-        System.out.println(arrivalPredictions);
+        PostcodeData postcodeData = postcodeApiClient.getPostcodeDate("NW51TL");
+        NearbyStops nearestStops = stopPointApiClient.getNearestStops(
+                postcodeData.getLatitude(),
+                postcodeData.getLongitude()
+        );
+
+        for (StopPoint stopPoint : nearestStops.getNearest(2)) {
+            List<ArrivalPrediction> nextBuses = stopPointApiClient.getNextBusesForStop(stopPoint.getStopId());
+            System.out.println(nextBuses);
+        }
     }
 }	
