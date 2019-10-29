@@ -1,13 +1,14 @@
 package training.busboard;
 
-import training.busboard.postcodes.PostcodeApiClient;
 import training.busboard.postcodes.models.PostcodeData;
+import training.busboard.stoppoints.StopPointApiClient;
 import training.busboard.stoppoints.models.ArrivalPrediction;
 import training.busboard.stoppoints.models.NearbyStops;
 import training.busboard.stoppoints.models.StopPoint;
-import training.busboard.stoppoints.StopPointApiClient;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class Main {
@@ -24,8 +25,18 @@ public class Main {
         );
 
         for (StopPoint stopPoint : nearestStops.getNearest(2)) {
-            List<ArrivalPrediction> nextBuses = stopPointApiClient.getNextBusesForStop(stopPoint.getStopId());
-            System.out.println(nextBuses);
+            System.out.println("\n" + stopPoint.getName());
+            for (ArrivalPrediction prediction : getNextBuses(5, stopPoint.getStopId(), stopPointApiClient)) {
+                System.out.println(prediction);
+            }
         }
+    }
+
+    private static List<ArrivalPrediction> getNextBuses(Integer limit, String stopId, StopPointApiClient stopPointApiClient) {
+        return stopPointApiClient.getNextBusesForStop(stopId)
+                .stream()
+                .sorted(Comparator.comparingInt(ArrivalPrediction::getTimeToStation))
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 }	
