@@ -26,8 +26,12 @@ public class Main {
 
         for (StopPoint stopPoint : nearestStops.getNearest(2)) {
             System.out.println("\n" + stopPoint.getName());
-            for (ArrivalPrediction prediction : getNextBuses(5, stopPoint.getStopId(), stopPointApiClient)) {
-                System.out.println(prediction);
+            List<ArrivalPrediction> nextBuses = getNextBuses(5, stopPoint.getStopId(), stopPointApiClient);
+
+            if (nextBuses.isEmpty()) {
+                System.out.println("No buses arriving soon.");
+            } else {
+                nextBuses.forEach(System.out::println);
             }
         }
     }
